@@ -6,6 +6,7 @@ var howLongToWait = 1000;
 //       .text(countSec);
 // header.append(timer);
 // $(this).append(header);
+// why didn't this work???
 
 var header = document.createElement("header");
 var timer = document.createElement("p");
@@ -82,6 +83,81 @@ var questionList = [
             ]
     },
 ]
+// creates an Object, with 2 attributes--Question, and Possible Answers
+
+
+
+var displayQuestion = function(questionArray){
+    // display countSec 
+    // create elements that hold question, and then
+    // each answer. Need to create 5 elements--1 for Q, and 4 for A
+    // then, add buttons to each answer. For loop?
+    // also add class to it--one for all those that are TRUE, and one for FALSE
+    // change colors when clicked, based on class
+    // check if element is clicked, and when it is clicked, 
+    // display according to class if right and wrong
+    // specify on bottom of page
+    // if wrong, deduct 5 from countSec
+    // immediately "delete" the last question
+
+    // then the displayQuestion function has ended, and you return to 
+    // the for loop, which tests to see if your time is up or not
+    // if it is up, tells you the time (your score) and takes intials
+    // to save as object in local storage
+
+};
+
+for(var i=0; i<questionList.length; i++){
+    // if(countSec<=0), then stop, go to end quiz function
+    // call function that creates elements and displays answers
+    // pass through the first question, and so on--
+    displayQuestion(questionList[i]);
+}
+
+
+
+// need start quiz function
+
+// end quiz function. prompts you to save time (score) and name
+// then once submitted, displays high scores in order of high to low
+// , where you have choice to return to start quiz function
+// or also, to clear storage
+
+// need clear storage function that executes if clicked.
+
+
+var startQuiz = function(){
+
+};
+
+var endQuiz = function(){
+
+};
+
+var clearStorage = function(){
+
+};
+
+var setStorage = function(){
+
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // var questions = [
 //     {
