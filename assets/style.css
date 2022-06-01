@@ -1,28 +1,88 @@
-:root{
-      --white:white;
-      --purple:purple;
-
+:root {
+      --fontColor: white;
+      --backgroundColor: purple;
+      font-family: "Source Sans Pro", serif;
+      font-size: 24px;
+}
+body{
+      background-color: rgba(165, 42, 42, 0.169);
 }
 
-header{
-      margin:20px 20px 20px 20px;
-      display:flex;
+
+header {
+      margin: 20px 20px 20px 20px;
+      display: flex;
+      justify-content: flex-end;
 }
 
-/* allows sections be hidden */
-.hidden{
-      display:none;
+/* now I have this as flex, I can't use display:none??? */
+.front-page, .end-quiz, .last-page {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
 }
 
-header > p{
+
+header>p {
       justify-content: right;
+      font-size: 24px;
 }
 
 ul {
       list-style-type: none;
 }
-ul li{
-      background-color: var(--purple);
-      font-size: 16px;
-      color:white;
+
+ul li {
+      background-color: var(--backgroundColor);
+      font-size: 24px;
+      color: var(--fontColor);
+      border-radius: 10px;
+      margin-top: 15px;
+      padding: 10px;
+      width: max-content;
 }
+
+h1 {
+      font-size: 48px;
+}
+
+button {
+      font-size: 24px;
+      background-color: var(--backgroundColor);
+      color: var(--fontColor);
+      border-radius: 10px;
+      padding: 10px;
+}
+
+button:hover,
+ul li:hover {
+      background-color: rgb(88, 9, 88);
+      box-shadow: 10px 10px 10px rgb(170, 167, 167);
+}
+
+span {
+      font-size:36px;
+      font:bold;
+}
+
+.question-display{
+      margin-left:200px;
+}
+
+form input{
+    padding: 12px;
+    font-size: 20px;
+    border-radius: 10px;
+    margin-bottom:20px;
+}
+#submit-form{
+      display:flex;
+      flex-direction: column;
+      align-items: center;
+}
+
+/* allows sections be .hidden */
+.hidden{
+      display: none;
+}
+/* !important can use this here? */

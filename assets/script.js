@@ -112,10 +112,9 @@ var questionList = [
 var displayQuestion = function (questionObj) {
     questionDisplayEl.className="question-display";
     var questionAskedEl = document.querySelector(".question-asked");
-    console.log(questionAskedEl);
     var possibleAnswersEl = document.querySelector(".possible-answers");
 
-    // while loop that clears out previous answers, creates error if run on first question
+    // while loop that clears out previous answers
     while (possibleAnswersEl.firstChild) {
         possibleAnswersEl.removeChild(possibleAnswersEl.lastChild);
     }
@@ -123,8 +122,7 @@ var displayQuestion = function (questionObj) {
     // create elements that hold question, and then each answer. 
     questionAskedEl.innerText = questionObj.question;
     var answerKeys = Object.keys(questionObj.answers) // ['a','b','c','d']
-    // questionObj['answers']
-    console.log(4)
+  
     // loops through and creates answer elements in HTML 
     for (var i = 0; i < answerKeys.length; i++) {
         const answerKey = answerKeys[i]; //A, B, C, D
@@ -159,6 +157,7 @@ var answerSelectionHandler = function (event) {
     }
     questionCount++;
     if (questionCount >= questionList.length || countSec <= 0) {
+        rightOrWrongEl.innerText = "";
         endQuiz();
     }
     else {
