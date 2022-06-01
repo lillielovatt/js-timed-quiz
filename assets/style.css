@@ -1,7 +1,7 @@
 :root{
       --white:white;
       --purple:purple;
-      
+
 }
 
 header{
@@ -16,4 +16,13 @@ header{
 
 header > p{
       justify-content: right;
+}
+
+ul {
+      list-style-type: none;
+}
+ul li{
+      background-color: var(--purple);
+      font-size: 16px;
+      color:white;
 }

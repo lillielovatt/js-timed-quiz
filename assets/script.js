@@ -3,8 +3,15 @@ var howLongToWait = 1000;
 localStorage.setItem("initials", "highScore");
 var formEl = document.querySelector("#submit-form");
 var startQuizEl = document.getElementById("start-quiz");
-var frontPageEl= document.querySelector(".front-page");
-// querySelector("submit[id='start-quiz']");
+var frontPageEl = document.getElementById("front-page");
+
+var questionCount = 0;
+var allAnswersEl;
+var questionDisplayEl = document.querySelector(".question-display");
+var rightOrWrongEl = document.createElement("span");
+ 
+var endQuizEl = document.querySelector("#end-quiz");
+endQuizEl.className="hidden";
 
 // var header = $("<header>").addClass("header");
 // var timer = $("<p>")
@@ -16,9 +23,13 @@ var frontPageEl= document.querySelector(".front-page");
 var timer = document.createElement("p");
 document.querySelector("header").appendChild(timer);
 
+// timer, with 60 seconds
 function finishedTimer() {
     // alert(countSec);
     timer.innerText = "Time: " + countSec;
+    if (questionCount === questionList.length) {
+        return;
+    }
     countSec--;
     if (countSec < 0) {
         return;
@@ -26,12 +37,8 @@ function finishedTimer() {
     // if() needs to stop changing countSec when the quiz ends
     setTimeout(finishedTimer, howLongToWait);
 }
-setTimeout(finishedTimer, howLongToWait);
 
-// currently, can't loop through answers to display,
-// because they're a, b, c, d 
-// thinking of shifting to answers being an array
-//  and correctAnswer being the index of the correct answer
+// creates an array, with 6 objects and 3 attributes each--question, answers, and correctanswer
 var questionList = [
     {
         question: "Inside which HTML element do we put the javascript?",
@@ -94,45 +101,35 @@ var questionList = [
         correctAnswer: "b"
     },
 ]
-// creates an Object, with 3 attributes--question, answers, and correctanswer
 
-var displayQuestion = function (questionObj, questionIndex) {
-   var questionAskedEl = document.querySelector(".question-asked"); 
-   var possibleAnswersEl = document.querySelector(".possible-answers");
-   // INITIALIZE ALL THINGS TO ""
-    // then fill up as function runs
+var displayQuestion = function (questionObj) {
+    var questionAskedEl = document.querySelector(".question-asked");
+    var possibleAnswersEl = document.querySelector(".possible-answers");
 
-    // create elements that hold question, and then
-    // each answer. Need to create 5 elements--1 for Q, and 4 for A
-    
+    // while loop that clears out previous answers.
+    while (possibleAnswersEl.firstChild) {
+        possibleAnswersEl.removeChild(possibleAnswersEl.lastChild);
+    }
+
+    // create elements that hold question, and then each answer. 
     questionAskedEl.innerText = questionObj.question;
     var answerKeys = Object.keys(questionObj.answers) // ['a','b','c','d']
     // questionObj['answers']
 
-    // loops through and creates list 
-   // for (var i = 0; i < 4; i++) {
+    // loops through and creates answer elements in HTML 
     for (var i = 0; i < answerKeys.length; i++) {
         const answerKey = answerKeys[i]; //A, B, C, D
         const answerItem = questionObj.answers[answerKey]; //WORDS
         var answerEl = document.createElement("li");
+        answerEl.innerText = answerItem;
         answerEl.className = "answer-choice";
 
-        if (answerKey === questionObj.correctAnswer) {
-            answerEl.setAttribute("data-question-id", questionIndex)
-            answerEl.setAttribute("data-answer-id", answerKey)
-            // statusSelectEl.setAttribute("data-task-id", taskId);
-            // add another class, class="true" or something
-        }
-        else {
-            // add class that is "false" or something
-        }
-
-        // add button too
+        answerEl.setAttribute("data-question-id", questionCount);
+        answerEl.setAttribute("data-answer-id", answerKey);
 
         possibleAnswersEl.appendChild(answerEl);
     }
-
-    var allAnswersEl = document.querySelector(".answer-choice");
+    var allAnswersEl = document.querySelector(".possible-answers");
     allAnswersEl.addEventListener("click", answerSelectionHandler);
 
     // then, add buttons to each answer. For loop?
@@ -153,62 +150,56 @@ var displayQuestion = function (questionObj, questionIndex) {
 };
 
 
-
 var answerSelectionHandler = function (event) {
     var targetEl = event.target;
-    const questionIndex = targetEl.dataset.questionId;
-    // do the same for answerId
+    var questionIndex = targetEl.dataset.questionId; //should be the same as questionCount, number of question ID
+    var answerIndex = targetEl.dataset.answerId; //should be correct answer letter.
+    rightOrWrongEl.innerText = "";
 
-    // if()
-
-    if (targetEl.matches(".true")) {
-        // display "right"
-    } else if (targetEl.matches(".false")) {
-        // display 'wrong'
-        // countSec-=5;
+    if (questionList[questionIndex].correctAnswer === answerIndex) {
+        rightOrWrongEl.innerText = "Right!";
+        questionDisplayEl.appendChild(rightOrWrongEl);
+    } else if (questionList[questionIndex].correctAnswer != answerIndex) {
+        rightOrWrongEl.innerText = "Wrong!";
+        questionDisplayEl.appendChild(rightOrWrongEl);
+        countSec -= 5;
     }
+    questionCount++;
+    if (questionCount >= questionList.length || countSec <= 0) {
+        endQuiz();
+    }
+    else {
+        displayQuestion(questionList[questionCount]);
+    }
+};
+
+var startQuiz = function () {
+    // class=front-page should be hidden - by adding class hidden
+    frontPageEl.className = "hidden";
+    setTimeout(finishedTimer, howLongToWait);
+    displayQuestion(questionList[questionCount]);
 };
 
 // end quiz function. prompts you to save time (score) and name
 // then once submitted, displays high scores in order of high to low
 // , where you have choice to return to start quiz function
 // or also, to clear storage
-
-var startQuiz = function () {
-    // class=front-page should be hidden - by adding class hidden
-    frontPageEl.className+= " hidden";
-
-
-    for (var i = 0; i < questionList.length; i++) {
-        if (countSec <= 0) {
-            endQuiz(false);
-            // break for loop instead?
-        }
-        console.log("check");
-        // call function that creates elements and displays answers
-        // pass through the first question, and so on--
-        displayQuestion(questionList[i], i);
-    }
-    endQuiz(false);
-};
-
-
-
 var endQuiz = function (bool) {
-    // display class end-quiz
-    if (!bool) {
-        var finalScoreEl = document.querySelector(".final-score");
-        finalScoreEl.innerText = "Your final score is " + countSec + ".";
+    while (questionDisplayEl.firstChild) {
+        questionDisplayEl.removeChild(questionDisplayEl.lastChild);
     }
-    else{
-        // once setStorage is run, this needs to disappear.
-        // call function
-    }
+    endQuizEl.className="end-quiz";
+    var finalScoreEl = document.querySelector(".final-score");
+    finalScoreEl.innerText = "Your final score is " + countSec + ".";
 };
 
 var clearStorage = function () {
     localStorage.clear();
 };
+
+var highScorePage=function(){
+    endQuizEl.className="hidden";
+}
 
 var setStorage = function (event) {
     event.preventDefault();
@@ -221,9 +212,9 @@ var setStorage = function (event) {
         alert("You need to fill out your intials, not your name!");
         return;
     }
-    localStorage.setItem("intials", initialsInput);
+    localStorage.setItem("initials", initialsInput);
     localStorage.setItem("highscore", countSec);
-    endQuiz(true);
+    highScorePage();
 };
 
 startQuizEl.addEventListener("click", startQuiz);
@@ -231,7 +222,10 @@ formEl.addEventListener("submit", setStorage);
 // add event listener for the option when they choose "reset high scores"
 // resetHighScoresEl.addEventListener("submit",clearStorage);
 
-
+var frontPage = function () {
+    frontPageEl.className = "front-page";
+};
+frontPage();
 
 
 
