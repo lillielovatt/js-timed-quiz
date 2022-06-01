@@ -1,21 +1,25 @@
-var countSec = 60;
+var countSec;
+var questionCount;
 var howLongToWait = 1000;
-var highScore = [];
+var highScoreStorage = [];
+
 
 var formEl = document.querySelector("#submit-form");
+
+var startOverButtonEl = document.getElementById("start-over");
+var clearHighScoreButtonEl = document.getElementById("clear-scores");
+
 var startQuizButtonEl = document.getElementById("start-quiz");
 var frontPageEl = document.getElementById("front-page");
 
 var lastPageEl = document.getElementById("last-page");
-lastPageEl.className="hidden";
 
-var questionCount = 0;
 var allAnswersEl;
-var questionDisplayEl = document.querySelector(".question-display");
+var questionDisplayEl = document.getElementById("question-display");
 var rightOrWrongEl = document.createElement("span");
  
 var endQuizEl = document.querySelector("#end-quiz");
-endQuizEl.className="hidden";
+
 
 
 
@@ -106,10 +110,12 @@ var questionList = [
 
 // displays questions, with argument 1 object from questionList array of objects
 var displayQuestion = function (questionObj) {
+    questionDisplayEl.className="question-display";
     var questionAskedEl = document.querySelector(".question-asked");
+    console.log(questionAskedEl);
     var possibleAnswersEl = document.querySelector(".possible-answers");
 
-    // while loop that clears out previous answers.
+    // while loop that clears out previous answers, creates error if run on first question
     while (possibleAnswersEl.firstChild) {
         possibleAnswersEl.removeChild(possibleAnswersEl.lastChild);
     }
@@ -118,7 +124,7 @@ var displayQuestion = function (questionObj) {
     questionAskedEl.innerText = questionObj.question;
     var answerKeys = Object.keys(questionObj.answers) // ['a','b','c','d']
     // questionObj['answers']
-
+    console.log(4)
     // loops through and creates answer elements in HTML 
     for (var i = 0; i < answerKeys.length; i++) {
         const answerKey = answerKeys[i]; //A, B, C, D
@@ -163,19 +169,14 @@ var answerSelectionHandler = function (event) {
 var startQuiz = function () {
     // class=front-page should be hidden - by adding class hidden
     frontPageEl.className = "hidden";
+    countSec=60;
     setTimeout(finishedTimer, howLongToWait);
     displayQuestion(questionList[questionCount]);
 };
 
-// end quiz function. prompts you to save time (score) and name
-// then once submitted, displays high scores in order of high to low
-// , where you have choice to return to start quiz function
-// or also, to clear storage
 var endQuiz = function () {
     timer.innerText = "Time's up!";
-    while (questionDisplayEl.firstChild) {
-        questionDisplayEl.removeChild(questionDisplayEl.lastChild);
-    }
+    document.getElementById("question-display").className="hidden";
     endQuizEl.className="end-quiz";
     var finalScoreEl = document.querySelector(".final-score");
     finalScoreEl.innerText = "Your final score is " + countSec + ".";
@@ -187,6 +188,26 @@ var clearStorage = function () {
 
 var highScorePage=function(){
     endQuizEl.className="hidden";
+    lastPageEl.className="last-page";
+    // wanted to sort them but will discuss later, could not work out
+    // for(var i=0; i<highScore.length;i++){
+    //     if(highScore.length===1){
+    //         // display just the 1 score as high score, done
+    //     }
+    //     else{
+    //         if(highScore[highScore.length-1]>highScore[i]){
+
+    //         }
+    //     }
+    // }
+    for(var i=0; i<highScoreStorage.length;i++){
+        var highScoreDisplayEl = document.querySelector(".high-scores");
+        var highScoreEachEl = document.createElement("li");
+        highScoreEachEl.innerText= " " + highScoreStorage[i].initials + " - " + highScoreStorage[i].highScore
+        highScoreDisplayEl.appendChild(highScoreEachEl);
+    }
+
+
 }
 
 var setStorage = function (event) {
@@ -200,20 +221,39 @@ var setStorage = function (event) {
         alert("You need to fill out your intials, not your name!");
         return;
     }
-    highScore=[initialsInput, countSec];
-    localStorage.setItem("highscore", highScore);
+    initialsInput=initialsInput.toUpperCase();
+    var highScoreDataObj = {
+        initials: initialsInput,
+        highScore: countSec
+    };
+    highScoreStorage = JSON.parse(localStorage.getItem("highscore")) || [];
+    highScoreStorage.push(highScoreDataObj);
+    localStorage.setItem("highscore", JSON.stringify(highScoreStorage));
     highScorePage();
 };
 
-startQuizButtonEl.addEventListener("click", startQuiz);
-formEl.addEventListener("submit", setStorage);
-// add event listener for the option when they choose "reset high scores"
-// resetHighScoresEl.addEventListener("submit",clearStorage);
-
 var frontPage = function () {
+    // display front page
     frontPageEl.className = "front-page";
+    // hide end quiz page and last page
+    lastPageEl.className="hidden";
+    endQuizEl.className="hidden";
+    // timer not yet on, question count not yet started
     timer.innerText = "Time: 0";
+    questionCount = 0;
+
+    // front page remains on screen until user clicks startQuizButtonEl
 };
+
+// start quiz  button
+startQuizButtonEl.addEventListener("click", startQuiz);
+// submit initials at end of quiz button
+formEl.addEventListener("submit", setStorage);
+// start quiz over button (return to front page)
+startOverButtonEl.addEventListener("click", frontPage);
+// clear high score button
+clearHighScoreButtonEl.addEventListener("click", clearStorage);
+
 frontPage();
 
 
