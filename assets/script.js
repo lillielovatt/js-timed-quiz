@@ -1,9 +1,13 @@
 var countSec = 60;
 var howLongToWait = 1000;
-localStorage.setItem("initials", "highScore");
+var highScore = [];
+
 var formEl = document.querySelector("#submit-form");
-var startQuizEl = document.getElementById("start-quiz");
+var startQuizButtonEl = document.getElementById("start-quiz");
 var frontPageEl = document.getElementById("front-page");
+
+var lastPageEl = document.getElementById("last-page");
+lastPageEl.className="hidden";
 
 var questionCount = 0;
 var allAnswersEl;
@@ -12,6 +16,8 @@ var rightOrWrongEl = document.createElement("span");
  
 var endQuizEl = document.querySelector("#end-quiz");
 endQuizEl.className="hidden";
+
+
 
 // var header = $("<header>").addClass("header");
 // var timer = $("<p>")
@@ -25,16 +31,12 @@ document.querySelector("header").appendChild(timer);
 
 // timer, with 60 seconds
 function finishedTimer() {
-    // alert(countSec);
     timer.innerText = "Time: " + countSec;
-    if (questionCount === questionList.length) {
+    if (questionCount === questionList.length || countSec <= 0) {
+        endQuiz();
         return;
     }
     countSec--;
-    if (countSec < 0) {
-        return;
-    }
-    // if() needs to stop changing countSec when the quiz ends
     setTimeout(finishedTimer, howLongToWait);
 }
 
@@ -102,6 +104,7 @@ var questionList = [
     },
 ]
 
+// displays questions, with argument 1 object from questionList array of objects
 var displayQuestion = function (questionObj) {
     var questionAskedEl = document.querySelector(".question-asked");
     var possibleAnswersEl = document.querySelector(".possible-answers");
@@ -131,22 +134,6 @@ var displayQuestion = function (questionObj) {
     }
     var allAnswersEl = document.querySelector(".possible-answers");
     allAnswersEl.addEventListener("click", answerSelectionHandler);
-
-    // then, add buttons to each answer. For loop?
-    // also add class to it--one for all those that are TRUE, and one for FALSE
-
-    // check if element is clicked, and when it is clicked, 
-    // display according to class if right and wrong
-    // specify on bottom of page
-    // if wrong, deduct 5 from countSec
-    // immediately "delete" the last question
-    // ???? how do I do this? In kanban version,
-    // you could delete the tasks from the array. 
-
-    // then the displayQuestion function has ended, and you return to 
-    // the for loop, which tests to see if your time is up or not
-    // if it is up, tells you the time (your score) and takes intials
-    // to save as object in local storage
 };
 
 
@@ -184,7 +171,8 @@ var startQuiz = function () {
 // then once submitted, displays high scores in order of high to low
 // , where you have choice to return to start quiz function
 // or also, to clear storage
-var endQuiz = function (bool) {
+var endQuiz = function () {
+    timer.innerText = "Time's up!";
     while (questionDisplayEl.firstChild) {
         questionDisplayEl.removeChild(questionDisplayEl.lastChild);
     }
@@ -212,18 +200,19 @@ var setStorage = function (event) {
         alert("You need to fill out your intials, not your name!");
         return;
     }
-    localStorage.setItem("initials", initialsInput);
-    localStorage.setItem("highscore", countSec);
+    highScore=[initialsInput, countSec];
+    localStorage.setItem("highscore", highScore);
     highScorePage();
 };
 
-startQuizEl.addEventListener("click", startQuiz);
+startQuizButtonEl.addEventListener("click", startQuiz);
 formEl.addEventListener("submit", setStorage);
 // add event listener for the option when they choose "reset high scores"
 // resetHighScoresEl.addEventListener("submit",clearStorage);
 
 var frontPage = function () {
     frontPageEl.className = "front-page";
+    timer.innerText = "Time: 0";
 };
 frontPage();
 
